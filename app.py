@@ -18,6 +18,7 @@ llm = ChatGroq(
     model_name="llama-3.3-70b-versatile"
 ) 
 # print(llm.invoke("how is Baahubali?"))
+embedder = HuggingFaceEmbeddings(model_name=embedding_model)
 
 if __name__ == "__main__":
     extract_text=extract_text_from_pdf("research-paper.pdf")
