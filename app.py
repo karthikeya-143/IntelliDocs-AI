@@ -1,9 +1,10 @@
+import json
 import os
 
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
-from src.load_and_extract_text import extract_text_from_pdf
+from src.load_and_extract_text import extract_pdf_sections, extract_text_from_pdf
 
 load_dotenv()
 
@@ -19,4 +20,7 @@ llm = ChatGroq(
 
 if __name__ == "__main__":
     extract_text=extract_text_from_pdf("research-paper.pdf")
-    print(extract_text)
+    # print(extract_text)
+    extracted_sections=extract_pdf_sections(full_text=extract_text)
+    with open("extracted_sections.json","w") as f:
+        json.dump(extracted_sections,f,indent=4)
