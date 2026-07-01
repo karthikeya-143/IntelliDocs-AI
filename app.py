@@ -1,6 +1,6 @@
 import json
 import os
-
+from flask import Flask,render_template,request,jsonify
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
@@ -8,6 +8,11 @@ from src.load_and_extract_text import extract_pdf_sections, extract_text_from_pd
 from src.detect_and_split_sections import refine_sections,split_sections_with_content
 
 load_dotenv()
+
+app=Flask(__name__)
+app.config['UPLOAD_FOLDER']='uploads'
+
+os.makedirs(app.config['UPLOAD_FOLDER'],exist_ok=True)
 
 groq_api_key=os.getenv("GROQ_API_KEY")
 llm_model=os.getenv("LLM_MODEL")
@@ -20,16 +25,9 @@ llm = ChatGroq(
 # print(llm.invoke("how is Baahubali?"))
 embedder = HuggingFaceEmbeddings(model_name=embedding_model)
 
-if __name__ == "__main__":
-    extract_text=extract_text_from_pdf("research-paper.pdf")
-    # print(extract_text)
-    extracted_sections=extract_pdf_sections(full_text=extract_text)
-    # with open("extracted_sections.json","w") as f:
-    #     json.dump(extracted_sections,f,indent=4)
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    refined_sections=refine_sections(extracted_sections,llm)
-    # with open("refined_sections.json","w") as f:
-    #     json.dump(refined_sections,f,indent=4)
-    sections_with_content=split_sections_with_content(extract_text,refined_sections)
-    with open("sections_with_content.json","w") as f:
-        json.dump(sections_with_content,f,indent=4)
+if __name__ == "__main__":
+    app.run(debug=True)
